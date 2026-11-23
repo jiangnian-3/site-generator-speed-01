@@ -255,10 +255,11 @@ function layouts(b) {
 
 /** 8. The report: every refusal, draft, broken link and template that did not parse, sorted, then the counts. */
 function report(b) {
-  const lines = [...b.report, ...b.broken].sort(byCodeUnits);
-  const pages = b.sources.filter((s) => !s.post).length;
-  lines.push(`built ${pages} pages, ${b.posts.length} posts, ${b.tags.length} tags and ${b.statics.length} static files`);
-  b.output[REPORT_FILE] = `${lines.join('\n')}\n`;
+  const rows = [...b.report, ...b.broken];
+  rows.sort(byCodeUnits);
+  const pageCount = b.sources.length - b.posts.length;
+  rows.push(`built ${pageCount} pages, ${b.posts.length} posts, ${b.tags.length} tags and ${b.statics.length} static files`);
+  b.output[REPORT_FILE] = `${rows.join('\n')}\n`;
 }
 
 /** The plugins, in the order a build runs them. */
