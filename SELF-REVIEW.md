@@ -44,5 +44,6 @@
 ## 体积、剩余门与事项
 
 - 当前累计提交代码的 entry tracked files 合计 **50,390 bytes**（包含此报告及 LICENSE/NOTICE），远低于 4 MiB 上限。完整 README/badge/owner 物料如之后补入，仍须按最终提交重新计数。
+- MCP 状态疑点：本地 user-level config 显示 `context7`、`deepwiki`、`parallel` 都启用。此 coding 工具接口没有交互式 `/mcp` 能力；我未改 machine-wide config，也未调用 context7/deepwiki，但无法证明本会话级的关闭要求已达成。若接下来需在本会话继续，N 应先处理此项 session-level MCP 设置。
 - 尚未完成提交前资格全套复核：duplicate snapshot/source bundle、license/readme/live badge、GitHub About/owner 条件、entry signature、quota、最终完整 bundle/check 和用户确认。没有 push、没有 submit。
 - 若继续优化：开工前重新看 live 榜；只选择有 profile 证据、独立上下文可检验的纯 JS 更少工作方案；改后跑受影响的 fuzz/differential 和完整 kit grade，再做串行同核重复测量。若未达到经 N 确认的目标或官方可比性缺失，如实记录阻碍；不为了截止凑交。
