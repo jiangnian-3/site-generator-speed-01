@@ -43,6 +43,6 @@
 
 ## 体积、剩余门与事项
 
-- 当前累计提交代码的 entry tracked files 合计 **50,294 bytes**（包含此报告及 LICENSE/NOTICE），远低于 4 MiB 上限。完整 README/badge/owner 物料如之后补入，仍须按最终提交重新计数。
+- 当前累计提交代码的 entry tracked files 合计 **50,390 bytes**（包含此报告及 LICENSE/NOTICE），远低于 4 MiB 上限。完整 README/badge/owner 物料如之后补入，仍须按最终提交重新计数。
 - 尚未完成提交前资格全套复核：duplicate snapshot/source bundle、license/readme/live badge、GitHub About/owner 条件、entry signature、quota、最终完整 bundle/check 和用户确认。没有 push、没有 submit。
 - 若继续优化：开工前重新看 live 榜；只选择有 profile 证据、独立上下文可检验的纯 JS 更少工作方案；改后跑受影响的 fuzz/differential 和完整 kit grade，再做串行同核重复测量。若未达到经 N 确认的目标或官方可比性缺失，如实记录阻碍；不为了截止凑交。
