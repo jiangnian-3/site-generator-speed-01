@@ -9,7 +9,7 @@
 
 import { parseFrontMatter } from './lib/frontmatter.js';
 import { renderMarkdown } from './lib/markdown.js';
-import { parseTemplate, renderNodes, TemplateError } from './lib/template.js';
+import { parseTemplate, linkTemplates, renderNodes, TemplateError } from './lib/template.js';
 import { escapeHtml, longDate, slugify, uniqueSlug } from './lib/text.js';
 
 /** The report file every build writes. */
@@ -55,8 +55,10 @@ const dirOf = (path) => (path.includes('/') ? path.slice(0, path.lastIndexOf('/'
 function readSources(b) {
   const files = [...b.input.files].sort((x, y) => byCodeUnits(x.path, y.path));
   for (const f of files) {
-    if (f.path.endsWith('.md')) b.sources.push({ path: f.path, text: f.content.replace(/\r\n?/g, '\n') });
-    else b.statics.push({ path: f.path, content: f.content });
+    if (f.path.endsWith('.md')) {
+      const text = f.content;
+      b.sources.push({ path: f.path, text: text.includes('\r') ? text.replace(/\r\n?/g, '\n') : text });
+    } else b.statics.push({ path: f.path, content: f.content });
   }
 }
 
@@ -215,7 +217,15 @@ function layouts(b) {
   const site = { title: b.input.site.title, base_url: b.base };
   const allTags = b.tags.map((t) => ({ name: t.name, slug: t.slug, url: t.url, count: t.posts.length }));
   const recent = b.posts.slice(0, b.input.site.recent).map((p) => b.cards.get(p));
-  const ctx = { templates: b.templates, escape: escapeHtml };
+  const escaped = new Map();
+  const escape = (text) => {
+    const cached = escaped.get(text);
+    if (cached !== undefined) return cached;
+    const rendered = escapeHtml(text);
+    if (escaped.size < 4096) escaped.set(text, rendered);
+    return rendered;
+  };
+  const ctx = { templates: b.templates, escape };
   const render = (name, vars) => {
     const nodes = b.templates.get(name);
     return nodes === undefined ? null : renderNodes(nodes, { vars: { site, tags: allTags, recent, ...vars }, parent: null }, ctx, 0);
@@ -266,6 +276,7 @@ export function build(input) {
       report.push(err.message);
     }
   }
+  linkTemplates(templates);
   const b = {
     input,
     base: input.site.base_url.replace(/\/+$/, ''),
