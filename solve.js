@@ -177,18 +177,18 @@ function tags(b) {
 }
 
 /** A page's link record as templates read it. */
-const linkOf = (s) => (s === null ? null : { title: s.data.title, url: s.url, date: s.data.date ?? '', date_long: s.data.date === undefined ? '' : longDate(s.data.date) });
+const linkOf = (s, formatDate) => (s === null ? null : { title: s.data.title, url: s.url, date: s.data.date ?? '', date_long: s.data.date === undefined ? '' : formatDate(s.data.date) });
 
 /** A tag as templates read it (its posts as cards). */
 const tagOf = (b, t) => ({ name: t.name, slug: t.slug, url: t.url, count: t.posts.length, posts: t.posts.map((p) => b.cards.get(p)) });
 
 /** A post's card, as lists show it. */
-function cardOf(s) {
+function cardOf(s, formatDate) {
   return {
     title: s.data.title,
     url: s.url,
     date: s.data.date ?? '',
-    date_long: s.data.date === undefined ? '' : longDate(s.data.date),
+    date_long: s.data.date === undefined ? '' : formatDate(s.data.date),
     summary: s.data.summary ?? '',
     excerpt: s.excerpt,
     reading_minutes: Math.max(1, Math.ceil(wordsOf(s.body) / 200)),
@@ -197,21 +197,30 @@ function cardOf(s) {
 }
 
 /** A page as its layout reads it. */
-function pageOf(s, card) {
+function pageOf(s, card, formatDate) {
   return {
     ...card,
     slug: s.slug,
     content: s.html,
     toc: s.toc.map((h) => ({ level: h.level, id: h.id, html: h.html })),
-    newer: linkOf(s.newer ?? null),
-    older: linkOf(s.older ?? null),
+    newer: linkOf(s.newer ?? null, formatDate),
+    older: linkOf(s.older ?? null, formatDate),
     is_post: s.post,
   };
 }
 
 /** 7. Every page through its layout, the index pages and the tag pages through theirs. */
 function layouts(b) {
-  b.cards = new Map(b.posts.map((p) => [p, cardOf(p)]));
+  const dateCache = new Map();
+  const formatDate = (date) => {
+    let value = dateCache.get(date);
+    if (value === undefined) {
+      value = longDate(date);
+      dateCache.set(date, value);
+    }
+    return value;
+  };
+  b.cards = new Map(b.posts.map((p) => [p, cardOf(p, formatDate)]));
   const site = { title: b.input.site.title, base_url: b.base };
   const allTags = b.tags.map((t) => ({ name: t.name, slug: t.slug, url: t.url, count: t.posts.length }));
   const recent = b.posts.slice(0, b.input.site.recent).map((p) => b.cards.get(p));
@@ -228,7 +237,7 @@ function layouts(b) {
     const nodes = b.templates.get(name);
     return nodes === undefined ? null : renderNodes(nodes, { vars: { site, tags: allTags, recent, ...vars }, parent: null }, ctx, 0);
   };
-  for (const s of b.sources) b.output[`${s.outDir}/index.html`] = render(s.layout, { page: pageOf(s, s.post ? b.cards.get(s) : cardOf(s)) });
+  for (const s of b.sources) b.output[`${s.outDir}/index.html`] = render(s.layout, { page: pageOf(s, s.post ? b.cards.get(s) : cardOf(s, formatDate), formatDate) });
   const per = b.input.site.per_page;
   const pages = Math.max(1, Math.ceil(b.posts.length / per));
   const indexUrl = (k) => (k === 1 ? `${b.base}/` : `${b.base}/page/${k}/`);
