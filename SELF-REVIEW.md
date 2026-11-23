@@ -15,7 +15,7 @@
 
 ## 正确性证据
 
-- 官方 kit 本地 grader：Node **22.23.4**、`grade-local --driver process --worktree`，practice **3/3，`passed=1`，L1 regrade byte-for-byte reproduced**。grader 明确运行两次。日期缓存合并后的证据在 `../v2-work/date-cache-grade.log`；`../v2-work/committed-head-grade.log` 另对 HEAD `5916404` 执行了非 `--worktree` kit grading，结果同为 3/3、L1 逐字节复现。grader 提示文档有未提交改动但未纳入 graded commit；实现代码在 HEAD 中。
+- 官方 kit 本地 grader：Node **22.23.4**、`grade-local --driver process --worktree`，practice **3/3，`passed=1`，L1 regrade byte-for-byte reproduced**。grader 明确运行两次。日期缓存合并后的证据在 `../v2-work/date-cache-grade.log`；`../v2-work/committed-head-grade.log` 另对 HEAD `5916404` 执行非 `--worktree` kit grading，结果同为 3/3、L1 逐字节复现。报告更新后的最终 HEAD `46f9aa5` 也由 `../v2-work/final-head-grade.log` 完整 grading 通过（3/3、L1 逐字节复现）；其间仅改了自验文档，entry 实现代码未变。
 - kit vendor oracle 差分：21 个完整生成 case **0 diff / 60,112,129 output bytes**；30 个额外独立生成 case **0 diff**；21 个 Unicode、NUL、CRLF、静态文件、模板顺序/文件顺序 stress case **0 diff / 60,115,146 output bytes**。包括 reversed case 顺序/模板键与跨 `run()` 调用的确定性检查。
 - 定向差分：inline **30,012** 个输入 0 diff；front matter **50,014** 个固定/生成输入 0 diff；slug **50,015** 个输入 0 diff；模板变量/作用域、循环 `loop` shadowing、缺失 include 和 include depth 0/7/8/9 对照通过。
 - 最终 practice house、v1、v2 答卷各 **7,446,432 bytes**，SHA-256 均为 `25980928b145f54712027939364a64c277098bc4528a2d524e0bc27a0275fb03`。无 case ID、时钟、随机数、网络或跨 case 状态依赖。
